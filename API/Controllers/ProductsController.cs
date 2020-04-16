@@ -1,3 +1,7 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using BLL;
+using DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -6,16 +10,36 @@ namespace API.Controllers
     [Route("api/{controller}")]
     public class ProductsController : ControllerBase
     {
-        [HttpGet]
-        public string GetProducts()
+        public clsProduct cProducts { get; }
+
+        public ProductsController()
         {
-            return "this will be a list of product";
+            cProducts = new clsProduct();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProducts()
+        {
+            var PDList = await cProducts.GetProduct();
+            return Ok(PDList);
         }
         [HttpGet("{id}")]
-        public string GetProduct(int id)
+        public async Task<IActionResult> GetProduct(int id)
         {
-            return "this will be a single product";
-
+            var PDID = await cProducts.GetProductByID(id);
+            return Ok(PDID);
+        }
+        [HttpGet("brands")]
+        public async Task<IActionResult> GetProductBrands()
+        {
+            var PDList = await cProducts.GetProductBrand();
+            return Ok(PDList);
+        }
+        [HttpGet("types")]
+        public async Task<IActionResult> GetProductTypes()
+        {
+            var PDList = await cProducts.GetProductType();
+            return Ok(PDList);
         }
     }
 }
