@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using BLL;
-using DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -11,7 +9,6 @@ namespace API.Controllers
     public class ProductsController : ControllerBase
     {
         public clsProduct cProducts { get; }
-
         public ProductsController()
         {
             cProducts = new clsProduct();

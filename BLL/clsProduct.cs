@@ -1,28 +1,32 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DAL.Context;
+using AutoMapper;
+using BLL.AutoMapper;
+using BLL.Dtos;
 using DAL.Entities;
 using DAL.UnitOfWork;
-using Microsoft.EntityFrameworkCore;
 
 namespace BLL
 {
     public class clsProduct
     {
         UnitOfWork_Skinet UnitOfWork;
-        DbContext db;
+        private readonly IMapper _mapper;
+
         public clsProduct()
         {
+            var config = new AutoMapperConfiguration().Configure();
+            _mapper = config.CreateMapper();
             UnitOfWork = new UnitOfWork_Skinet();
-            db = new StoreContext();
         }
-        public async Task<IEnumerable<Product>> GetProduct()
+        public async Task<IEnumerable<ProductToReturnDto>> GetProduct()
         {
             try
             {
-                var PType = await UnitOfWork.GetProductRepo.Get(null, null, null, null, u => u.ProductBrand, u => u.ProductType);
-                return PType;
+                var PDList = await UnitOfWork.GetProductRepo.Get(null, null, null, null, u => u.ProductBrand, u => u.ProductType);
+                IEnumerable<ProductToReturnDto> returnlist = _mapper.Map<List<ProductToReturnDto>>(PDList);
+                return returnlist;
             }
             catch (Exception e)
             {
@@ -30,12 +34,13 @@ namespace BLL
                 return null;
             }
         }
-        public async Task<IEnumerable<Product>> GetProductByID(int ID)
+        public async Task<IEnumerable<ProductToReturnDto>> GetProductByID(int ID)
         {
             try
             {
-                var PType = await UnitOfWork.GetProductRepo.Get(filter: u => u.Id == ID, null, null, null, u => u.ProductBrand, u => u.ProductType);
-                return PType;
+                var PDListByID = await UnitOfWork.GetProductRepo.Get(filter: u => u.Id == ID, null, null, null, u => u.ProductBrand, u => u.ProductType);
+                IEnumerable<ProductToReturnDto> returnlist = _mapper.Map<List<ProductToReturnDto>>(PDListByID);
+                return returnlist;
             }
             catch (Exception e)
             {
