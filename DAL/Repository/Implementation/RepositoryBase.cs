@@ -25,29 +25,24 @@ namespace DAL.Repository.Implementation
         {
             await _context.BulkInsertOrUpdateAsync(entity);
         }
-
         public void Create(T entity)
         {
             _SpecificEntity.Add(entity);
         }
-
         public void Delete(T entity)
         {
             _SpecificEntity.Remove(entity);
         }
-
         public void DeleteById(object id)
         {
             T entity = _SpecificEntity.Find(id);
             _SpecificEntity.Remove(entity);
         }
-
         public async Task DeleteByIdAsync(object id)
         {
             T entity = await _SpecificEntity.FindAsync(id);
             _SpecificEntity.Remove(entity);
         }
-
         public IEnumerable<T> ExecuteSP(string spName, ref SqlParameter[] spParams)
         {
             string sqlCommand = "";
@@ -93,7 +88,6 @@ namespace DAL.Repository.Implementation
             }
             int rowcount = _context.Database.ExecuteSqlRaw("" + sqlCommand, spParams);
         }
-
         public IEnumerable<T> FindAll()
         {
             return _SpecificEntity;
@@ -102,7 +96,6 @@ namespace DAL.Repository.Implementation
         {
             return await _SpecificEntity.ToListAsync();
         }
-
         public IEnumerable<T> FindByCondition(Expression<Func<T, bool>> expression)
         {
             return _SpecificEntity.Where(expression);
@@ -111,15 +104,12 @@ namespace DAL.Repository.Implementation
         {
             return await _SpecificEntity.Where(expression).ToListAsync();
         }
-
         public Task<IEnumerable<T>> FindByConditionAsyncDbQuery(Expression<Func<T, bool>> expression)
         {
             throw new NotImplementedException();
         }
-
-        public virtual async Task<IEnumerable<T>> Get(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>,
-                                   IOrderedQueryable<T>> orderBy = null, int? page = null, int? pageSize = null,
-                                   params Expression<Func<T, object>>[] includes)
+        public virtual async Task<IReadOnlyList<T>> Get(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, int? page = null,
+        int? pageSize = null, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = _SpecificEntity;
 
@@ -138,17 +128,23 @@ namespace DAL.Repository.Implementation
             }
             return await query.ToListAsync();
         }
-
+        public async Task<int> CountAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _SpecificEntity;
+            foreach (Expression<Func<T, object>> include in includes)
+                query = query.Include(include);
+            if (filter != null)
+                query = query.Where(filter);
+            return await query.CountAsync();
+        }
         public async Task<IReadOnlyList<T>> GetAllAsync()
         {
             return await _SpecificEntity.ToListAsync();
         }
-
         public async Task<IReadOnlyList<T>> GetByConditionAsync(Expression<Func<T, bool>> expression)
         {
             return await _SpecificEntity.Where(expression).ToListAsync(); ;
         }
-
         public void Update(T entity)
         {
             _SpecificEntity.Update(entity);

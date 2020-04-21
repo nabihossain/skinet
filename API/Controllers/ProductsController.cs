@@ -1,12 +1,12 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using API.SpecParams;
 using BLL;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [ApiController]
-    [Route("api/{controller}")]
-    public class ProductsController : ControllerBase
+    public class ProductsController : BaseApiController
     {
         public clsProduct cProducts { get; }
         public ProductsController()
@@ -15,9 +15,11 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProducts()
+        public async Task<IActionResult> GetProducts([FromQuery]ProductSpecParams productParam)
         {
-            var PDList = await cProducts.GetProduct();
+            var sortBy = new KeyValuePair<string, string>(productParam.Field, productParam.Sort);
+            var PDList = await cProducts.GetProduct(sortBy, productParam.BrandId, productParam.TypeId,
+            productParam.Page, productParam.PageSize, productParam.Search);
             return Ok(PDList);
         }
         [HttpGet("{id}")]

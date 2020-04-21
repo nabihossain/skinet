@@ -23,11 +23,11 @@ namespace DAL.Repository.Interface
         Task DeleteByIdAsync(object id);
         Task BulkInsertOrUpdateAsync(T[] entity);
 
-        Task<IEnumerable<T>> Get(
+        Task<IReadOnlyList<T>> Get(
         Expression<Func<T, bool>> filter = null,
         Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, int? page = null, int? pageSize = null,
         params Expression<Func<T, object>>[] includes);
-
+        Task<int> CountAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] includes);
         // Methods for executing Store Procedure
         IEnumerable<T> ExecuteSP(string spName, ref SqlParameter[] spParams);
         IEnumerable<T> ExecuteSP(string spName);
